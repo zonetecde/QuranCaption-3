@@ -46,9 +46,46 @@
 	): string | number | boolean {
 		return videoStyle().getStyleValue(currentTarget, categoryName, styleName);
 	}
-
 	function hasSpecificOverride(categoryName: string, styleName: string): boolean {
 		return videoStyle().hasSpecificStyle(currentTarget, categoryName, styleName);
+	}
+
+	function hasValueOverride(categoryName: string, styleName: string): boolean {
+		if (currentTarget === 'global') {
+			// En mode global, vérifie s'il y a des overrides dans n'importe quelle cible
+			const globalValue = videoStyle().getStyleValue('global', categoryName, styleName);
+
+			// Vérifie arabic
+			if (videoStyle().hasSpecificStyle('arabic', categoryName, styleName)) {
+				const arabicValue = videoStyle().getStyleValue('arabic', categoryName, styleName);
+				if (arabicValue !== globalValue) return true;
+			}
+
+			// Vérifie toutes les traductions
+			const translations = globalState.getProjectTranslation.addedTranslationEditions;
+			for (const translation of translations) {
+				if (videoStyle().hasSpecificStyle(translation.name, categoryName, styleName)) {
+					const translationValue = videoStyle().getStyleValue(
+						translation.name,
+						categoryName,
+						styleName
+					);
+					if (translationValue !== globalValue) return true;
+				}
+			}
+
+			return false;
+		} else {
+			// En mode spécifique, vérifie si la valeur est différente du global
+			const globalValue = videoStyle().getStyleValue('global', categoryName, styleName);
+			const currentValue = videoStyle().getStyleValue(currentTarget, categoryName, styleName);
+
+			// Il faut qu'il y ait un override ET que la valeur soit différente
+			return (
+				videoStyle().hasSpecificStyle(currentTarget, categoryName, styleName) &&
+				currentValue !== globalValue
+			);
+		}
 	}
 
 	async function resetToDefaults() {
@@ -109,18 +146,23 @@
 				<div class="space-y-4 p-4 bg-gray-800/50 rounded-lg">
 					<p class="text-sm text-gray-400 mb-4">{category.description}</p>
 					{#each Object.entries(category.styles) as [styleName, style]}
-						{@const isOverridden = hasSpecificOverride(categoryName, styleName)}
+						{@const isOverridden = hasValueOverride(categoryName, styleName)}
 
 						<div
-							class="p-3 bg-gray-900/50 rounded border border-gray-700 {isOverridden &&
-							currentTarget !== 'global'
+							class="p-3 bg-gray-900/50 rounded border border-gray-700 {isOverridden
 								? 'border-indigo-500/50 bg-indigo-900/10'
 								: ''}"
 						>
-							{#if isOverridden && currentTarget !== 'global'}
+							{#if isOverridden}
 								<div class="flex items-center gap-1 mb-2">
 									<span class="material-icons text-xs text-indigo-400">override</span>
-									<span class="text-xs text-indigo-400">Overridden for {currentTarget}</span>
+									<span class="text-xs text-indigo-400">
+										{#if currentTarget === 'global'}
+											Has value overrides
+										{:else}
+											Value overridden for {currentTarget}
+										{/if}
+									</span>
 								</div>
 							{/if}
 							<StyleInput
