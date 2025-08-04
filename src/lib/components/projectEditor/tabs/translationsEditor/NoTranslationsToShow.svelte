@@ -30,7 +30,9 @@
 			adjusting your filters in the Translation Settings panel.
 		</p>
 		<!-- Quick actions with modern design -->
-		<div class="bg-accent/50 border border-color/50 rounded-xl p-6 backdrop-blur-sm">
+		<div
+			class="bg-accent/50 border border-[var(--border-color)]/50 rounded-xl p-6 backdrop-blur-sm"
+		>
 			<div class="flex items-center gap-2 mb-4">
 				<span class="material-icons text-accent text-sm">flash_on</span>
 				<p class="text-sm font-medium text-secondary">Quick actions</p>
@@ -38,7 +40,7 @@
 
 			<div class="flex flex-col gap-3">
 				<button
-					class="group flex items-center gap-3 p-3 rounded-lg bg-secondary/30 border border-color/30 hover:bg-accent hover:border-blue-300/50 transition-all duration-200 text-left cursor-pointer"
+					class="group flex items-center gap-3 p-3 rounded-lg bg-secondary/30 border border-[var(--border-color)]/30 hover:bg-accent hover:border-blue-300/50 transition-all duration-200 text-left cursor-pointer"
 					onclick={() => {
 						// Reset all filters to show everything
 						Object.keys(globalState.getTranslationsState.filters).forEach((key) => {
@@ -57,7 +59,7 @@
 				</button>
 
 				<button
-					class="group flex items-center gap-3 p-3 rounded-lg bg-secondary/30 border border-color/30 hover:bg-accent hover:border-blue-300/50 transition-all duration-200 text-left cursor-pointer"
+					class="group flex items-center gap-3 p-3 rounded-lg bg-secondary/30 border border-[var(--border-color)]/30 hover:bg-accent hover:border-blue-300/50 transition-all duration-200 text-left cursor-pointer"
 					onclick={() => {
 						globalState.getTranslationsState.checkOnlyFilters(['to review', 'ai error']);
 					}}

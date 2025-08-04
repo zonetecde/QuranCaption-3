@@ -94,85 +94,101 @@
 </script>
 
 <div
-	class="bg-secondary h-full flex flex-col border border-color rounded-lg py-6 px-2 space-y-6 relative overflow-y-auto"
+	class="bg-secondary h-full flex flex-col border border-color rounded-lg relative overflow-hidden"
 >
-	<!-- En-tête avec icône -->
-	<div class="flex gap-x-2 items-center justify-center">
-		<span class="material-icons text-accent text-xl">auto_fix_high</span>
-		<h2 class="text-xl font-bold text-primary">Video Style</h2>
-	</div>
-
-	<!-- Sélecteur de cible -->
-	<div class="px-4">
-		<div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
-			<div class="block text-sm font-medium text-gray-300 mb-2">
-				<span class="material-icons text-lg text-indigo-400 mr-2">target</span>
-				Style Target
+	<!-- En-tête moderne compact -->
+	<div class="bg-accent/30 border-b border-[var(--border-color)]/50 px-3 py-3">
+		<div class="flex items-center gap-2">
+			<div class="p-1.5 bg-accent-primary/20 rounded-md">
+				<span class="material-icons text-accent text-lg">auto_fix_high</span>
 			</div>
-			<select
-				bind:value={currentTarget}
-				class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded text-white text-sm focus:border-indigo-500 focus:outline-none"
-			>
-				{#each targetOptions() as option}
-					<option value={option.value}>{option.label}</option>
-				{/each}
-			</select>
-			<p class="text-xs text-gray-500 mt-2">
-				{#if currentTarget === 'global'}
-					Editing global styles that apply to all elements
-				{:else if currentTarget === 'arabic'}
-					Editing styles specific to Arabic text
-				{:else}
-					Editing styles specific to "{currentTarget}" translation
-				{/if}
-			</p>
+			<div class="flex-1 min-w-0">
+				<h2 class="text-base font-bold text-primary truncate">Video Style</h2>
+				<p class="text-xs text-secondary truncate">Customize appearance</p>
+			</div>
 		</div>
 	</div>
 
-	<!-- Bouton de réinitialisation -->
-	<div class="flex justify-center px-4">
+	<!-- Sélecteur de cible compact -->
+	<div class="p-3">
+		<div class="bg-accent/40 border border-[var(--border-color)]/50 rounded-lg p-3">
+			<div class="flex items-center gap-1.5 mb-2">
+				<span class="material-icons text-accent text-sm">target</span>
+				<label class="text-xs font-medium text-primary">Target</label>
+			</div>
+			<select
+				bind:value={currentTarget}
+				class="w-full px-2 py-2 bg-secondary border border-[var(--border-color)]/50 rounded text-primary text-xs
+					       focus:border-accent-primary focus:outline-none transition-colors"
+			>
+				{#each targetOptions() as option}
+					<option value={option.value} class="bg-secondary text-primary">{option.label}</option>
+				{/each}
+			</select>
+			<div class="mt-2 p-2 bg-secondary/50 rounded border border-[var(--border-color)]/30">
+				<p class="text-xs text-secondary">
+					{#if currentTarget === 'global'}
+						Global styles for all elements
+					{:else if currentTarget === 'arabic'}
+						Arabic text specific styles
+					{:else}
+						"{currentTarget}" translation styles
+					{/if}
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bouton reset compact -->
+	<div class="px-3 py-2 border-b border-[var(--border-color)]/30">
 		<button
 			onclick={resetToDefaults}
-			class="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded text-white text-sm transition-colors flex items-center gap-2"
+			class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-accent/30 hover:bg-accent
+				       border border-[var(--border-color)]/50 hover:border-accent-primary/50 rounded text-secondary
+				       hover:text-primary transition-all duration-200 text-xs font-medium"
 		>
 			<span class="material-icons text-sm">refresh</span>
-			Reset to Defaults
+			Reset Defaults
 		</button>
 	</div>
-	<!-- Styles par catégories -->
-	<div class="space-y-4 px-2 max-h-[calc(100vh-200px)]">
-		{#each Object.entries(styles()) as [categoryName, category]}
-			<Section name={category.name} icon={category.icon}>
-				<div class="space-y-4 p-4 bg-gray-800/50 rounded-lg">
-					<p class="text-sm text-gray-400 mb-4">{category.description}</p>
-					{#each Object.entries(category.styles) as [styleName, style]}
-						{@const isOverridden = hasValueOverride(categoryName, styleName)}
 
-						<div
-							class="p-3 bg-gray-900/50 rounded border border-gray-700 {isOverridden
-								? 'border-indigo-500/50 bg-indigo-900/10'
-								: ''}"
-						>
-							{#if isOverridden}
-								<div class="flex items-center gap-1 mb-2">
-									<span class="material-icons text-xs text-indigo-400">override</span>
-									<span class="text-xs text-indigo-400">
-										{#if currentTarget === 'global'}
-											Has value overrides
-										{:else}
-											Value overridden for {currentTarget}
-										{/if}
-									</span>
-								</div>
-							{/if}
-							<StyleInput
-								style={{ ...style, value: getCurrentStyleValue(categoryName, styleName) }}
-								onValueChange={(value) => handleStyleChange(categoryName, styleName, value)}
-							/>
-						</div>
-					{/each}
-				</div>
-			</Section>
-		{/each}
+	<!-- Contenu scrollable -->
+	<div class="flex-1 overflow-y-auto">
+		<!-- Styles par catégories compactes -->
+		<div class="p-3 space-y-3">
+			{#each Object.entries(styles()) as [categoryName, category]}
+				<Section name={category.name} icon={category.icon}>
+					<div class="space-y-2 p-3 bg-accent/20 border border-[var(--border-color)]/30 rounded-lg">
+						{#each Object.entries(category.styles) as [styleName, style]}
+							{@const isOverridden = hasValueOverride(categoryName, styleName)}
+
+							<div
+								class="p-2 bg-secondary/50 rounded border border-[var(--border-color)]/50 transition-all
+								       {isOverridden ? 'border-accent-primary/50 bg-accent-primary/5' : 'hover:border-accent/50'}"
+							>
+								{#if isOverridden}
+									<div
+										class="flex items-center gap-1 mb-1 p-1 bg-accent-primary/10 rounded text-xs"
+									>
+										<span class="material-icons text-xs text-accent-primary">tune</span>
+										<span class="text-accent-primary font-medium truncate">
+											{#if currentTarget === 'global'}
+												Has overrides
+											{:else}
+												Custom value
+											{/if}
+										</span>
+									</div>
+								{/if}
+								<StyleInput
+									style={{ ...style, value: getCurrentStyleValue(categoryName, styleName) }}
+									onValueChange={(value) => handleStyleChange(categoryName, styleName, value)}
+								/>
+							</div>
+						{/each}
+					</div>
+				</Section>
+			{/each}
+		</div>
 	</div>
 </div>

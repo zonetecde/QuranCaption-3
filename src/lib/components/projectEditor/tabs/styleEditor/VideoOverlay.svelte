@@ -58,13 +58,20 @@
 		return videoStyle().generateCSSForTarget(edition);
 	}
 
-	$inspect(arabicCSS());
+	$inspect(getTranslationCSS('eng-mustafakhattaba'));
 </script>
 
 <div class="w-full h-full">
 	<div class="absolute inset-0 flex flex-col items-center justify-center" id="subtitles-container">
 		{#if currentSubtitle() && currentSubtitle()!.id}
-			<p class="arabic absolute" style="opacity: {subtitleOpacity()}; {arabicCSS()};">
+			{@const arabicCss = arabicCSS()}
+			<p
+				class={'arabic absolute ' + (arabicCss.includes('Hafs') ? 'hafs' : '')}
+				style="opacity: {subtitleOpacity()}; {arabicCss.replace(
+					`font-family: 'Hafs', sans-serif;`,
+					``
+				)};"
+			>
 				{currentSubtitle()!.text}
 			</p>
 

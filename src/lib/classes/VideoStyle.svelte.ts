@@ -268,7 +268,9 @@ export class VideoStyle extends SerializableBase {
 		}
 
 		return css;
-	} /**
+	}
+
+	/**
 	 * Génère le CSS pour une catégorie spécifique
 	 */
 	generateCategoryCSS(categoryName: string): string {
@@ -374,6 +376,7 @@ export class VideoStyle extends SerializableBase {
 	async resetToDefaults(): Promise<void> {
 		const defaultStyle = await VideoStyle.getDefaultVideoStyle();
 		this.styles = defaultStyle.styles;
+		this.specificStyles = defaultStyle.specificStyles;
 		this.lastUpdated = new Date();
 	}
 }

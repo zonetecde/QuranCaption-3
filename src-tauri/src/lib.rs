@@ -1,6 +1,8 @@
+use std::collections::HashMap;
 use std::fs;
 use std::path::{Path};
 use std::process::Command;
+use font_kit::source::SystemSource;
 
 #[tauri::command]
 async fn download_from_youtube(
@@ -191,6 +193,33 @@ fn move_file(source: String, destination: String) -> Result<(), String> {
     std::fs::rename(source, destination).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn get_system_fonts() -> Result<HashMap<String, String>, String> {
+    let source = SystemSource::new();
+    let fonts = source.all_fonts().map_err(|e| e.to_string())?;
+    let mut font_map = HashMap::new();
+
+    for font in fonts {
+        // Load the font to get its properties
+        let handle = font.load().map_err(|e| e.to_string())?;
+        let family = handle.family_name();
+        
+        // Get the font path if available - using the Handle enum properly
+        match &font {
+            font_kit::handle::Handle::Path { path, .. } => {
+                font_map.insert(family, path.to_string_lossy().to_string());
+            },
+            font_kit::handle::Handle::Memory { .. } => {
+                // For in-memory fonts, we can't provide a path
+                // but we can still include the font family name with a note
+                font_map.insert(family, "Memory Font".to_string());
+            }
+        }
+    }
+
+    Ok(font_map)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -201,7 +230,8 @@ pub fn run() {
             download_from_youtube,
             get_duration,
             get_new_file_path,
-            move_file
+            move_file,
+            get_system_fonts
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

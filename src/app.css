@@ -64,6 +64,10 @@
 	user-select: none;
 }
 
+.hafs {
+	font-family: 'Hafs', sans-serif;
+}
+
 .bg-titlebar {
 	background-color: var(--bg-titlebar);
 }

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { Style } from '$lib/classes/VideoStyle.svelte.js';
+	import { invoke } from '@tauri-apps/api/core';
+	import { onMount } from 'svelte';
 
 	let {
 		style,
@@ -12,19 +14,29 @@
 	} = $props();
 </script>
 
-<div class="flex flex-col gap-2">
-	<div class="text-sm font-medium text-gray-300 flex items-center gap-2">
-		<span class="material-icons text-lg text-gray-400">{style.icon}</span>
-		{style.name}
+<div class="space-y-2">
+	<div class="flex items-center gap-2">
+		<span class="material-icons text-accent text-sm">{style.icon}</span>
+		<span class="text-xs font-medium text-primary flex-1 truncate">{style.name}</span>
 	</div>
 	<select
 		bind:value={bindedValue}
 		onchange={() => onValueChange(bindedValue)}
-		class="px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm focus:border-indigo-500 focus:outline-none"
+		class="w-full px-2 py-1.5 bg-accent/30 border border-[var(--border-color)]/50 rounded text-primary text-xs
+		       focus:border-accent-primary focus:outline-none focus:bg-accent/50 transition-all"
 	>
-		{#each style.options || [] as option}
-			<option value={option}>{option}</option>
-		{/each}
+		{#if style.name === 'Font Family'}
+			<option value="Hafs" class="bg-secondary text-primary"> Hafs (Quran font) </option>
+			{#await invoke('get_system_fonts') then fonts: any}
+				{#each Object.keys(fonts) as font}
+					<option value={font} class="bg-secondary text-primary">{font}</option>
+				{/each}
+			{/await}
+		{:else}
+			{#each style.options || [] as option}
+				<option value={option} class="bg-secondary text-primary">{option}</option>
+			{/each}
+		{/if}
 	</select>
-	<p class="text-xs text-gray-500">{style.description}</p>
+	<p class="text-xs text-secondary leading-relaxed">{style.description}</p>
 </div>

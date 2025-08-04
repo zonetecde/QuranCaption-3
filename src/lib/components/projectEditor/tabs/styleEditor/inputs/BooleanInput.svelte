@@ -12,18 +12,34 @@
 	} = $props();
 </script>
 
-<div class="flex flex-col gap-2">
-	<div class="flex items-center gap-2">
-		<label class="flex items-center gap-2 cursor-pointer">
+<div class="space-y-2">
+	<label class="flex items-center gap-2 cursor-pointer group">
+		<div class="relative">
 			<input
 				type="checkbox"
 				onchange={() => onValueChange(bindedValue)}
 				bind:checked={bindedValue}
-				class="w-4 h-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500 focus:ring-2"
+				class="sr-only"
 			/>
-			<span class="material-icons text-lg text-gray-400">{style.icon}</span>
-			<span class="text-sm font-medium text-gray-300">{style.name}</span>
-		</label>
-	</div>
-	<p class="text-xs text-gray-500 ml-6">{style.description}</p>
+			<div
+				class="w-10 h-5 bg-accent/50 rounded-full border border-[var(--border-color)]/50 transition-all group-hover:border-accent/70
+			            {bindedValue ? 'bg-accent-primary border-accent-primary' : ''}"
+			>
+				<div
+					class="w-4 h-4 bg-primary rounded-full transition-transform translate-x-0.5 translate-y-0.5
+				            {bindedValue ? 'translate-x-5' : ''}"
+				></div>
+			</div>
+		</div>
+		<span class="material-icons text-accent text-sm">{style.icon}</span>
+		<span class="text-xs font-medium text-primary flex-1">{style.name}</span>
+		<span
+			class="text-xs px-2 py-0.5 rounded {bindedValue
+				? 'text-accent-primary bg-accent-primary/20'
+				: 'text-thirdly bg-accent/20'}"
+		>
+			{bindedValue ? 'ON' : 'OFF'}
+		</span>
+	</label>
+	<p class="text-xs text-secondary leading-relaxed ml-12">{style.description}</p>
 </div>
