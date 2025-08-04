@@ -6,3 +6,9 @@ Idées:
 
 - Fav translation
 - Editable subtitle
+
+combobox
+edite pour tout
+pour specifique (arabe/traductions)
+-> ajouter un record dans videostyle avec langue [-> style en plus]
+ddans gemerate css ajouter la langue

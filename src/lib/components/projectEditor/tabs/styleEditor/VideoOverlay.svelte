@@ -44,19 +44,41 @@
 
 		return 1;
 	});
+	let videoStyle = $derived(() => {
+		return globalState.currentProject!.content.videoStyle;
+	});
+
+	// CSS pour le texte arabe
+	let arabicCSS = $derived(() => {
+		return videoStyle().generateCSSForTarget('arabic');
+	});
+
+	// CSS pour les traductions (par édition)
+	function getTranslationCSS(edition: string): string {
+		return videoStyle().generateCSSForTarget(edition);
+	}
+
+	$inspect(arabicCSS());
 </script>
 
 <div class="w-full h-full">
 	<div class="absolute inset-0 flex flex-col items-center justify-center" id="subtitles-container">
 		{#if currentSubtitle() && currentSubtitle()!.id}
-			<p class="arabic absolute" style="opacity: {subtitleOpacity()}">{currentSubtitle()!.text}</p>
+			<p class="arabic absolute" style="opacity: {subtitleOpacity()}; {arabicCSS()};">
+				{currentSubtitle()!.text}
+			</p>
 
 			{#each Object.keys(currentSubtitleTranslations()!) as edition}
 				{@const translation = (currentSubtitleTranslations()! as Record<string, Translation>)[
 					edition
 				]}
 
-				<p class="translation absolute" style="opacity: {subtitleOpacity()}">{translation.text}</p>
+				<p
+					class="translation absolute"
+					style="opacity: {subtitleOpacity()}; {getTranslationCSS(edition)}; "
+				>
+					{translation.text}
+				</p>
 			{/each}
 		{/if}
 	</div>
