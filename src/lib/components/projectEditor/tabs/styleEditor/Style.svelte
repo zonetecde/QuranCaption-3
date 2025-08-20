@@ -113,8 +113,8 @@
 			applyValueSimple(value);
 		}
 
-		// Déclenche un refresh éventuel (ex: max-height fit)
-		if (style.id === 'max-height') {
+		// Déclenche un refresh éventuel (ex: max-line fit)
+		if (style.id === 'max-line') {
 			globalState.updateVideoPreviewUI();
 		}
 	}

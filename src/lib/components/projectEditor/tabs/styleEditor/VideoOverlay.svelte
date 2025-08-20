@@ -83,11 +83,7 @@
 		let classes = ' ';
 
 		// Si on a certains styles qu'on modifie, on ajoute des styles pour afficher ce qu'ils font
-		if (
-			globalState.getSectionsState['width'] &&
-			(globalState.getSectionsState['width'].extended ||
-				globalState.getSectionsState['max-height'].extended)
-		) {
+		if (globalState.getSectionsState['width'] && globalState.getSectionsState['width'].extended) {
 			classes += 'bg-[#11A2AF]/50 ';
 		}
 
@@ -97,7 +93,7 @@
 	let lastSubtitleId = 0;
 
 	/**
-	 * Gère le max-height (fit on N lines) et la taille de police réactive des sous-titres
+	 * Gère le max-line (fit on N lines) et la taille de police réactive des sous-titres
 	 */
 	$effect(() => {
 		if (!currentSubtitle()) return;
@@ -113,7 +109,7 @@
 		lastSubtitleId = currentSubtitle()!.id;
 
 		globalState.currentProject!.projectEditorState.timeline.movePreviewTo;
-		globalState.getVideoStyle.getStylesOfTarget('arabic').findStyle('max-height')!.value;
+		globalState.getVideoStyle.getStylesOfTarget('arabic').findStyle('max-line')!.value;
 		globalState.getVideoStyle.getStylesOfTarget('arabic').findStyle('font-size')!.value;
 
 		untrack(async () => {
@@ -122,15 +118,14 @@
 			targets.forEach(async (target) => {
 				try {
 					if (
-						globalState.getVideoStyle.getStylesOfTarget(target).findStyle('max-height')!.value !==
+						globalState.getVideoStyle.getStylesOfTarget(target).findStyle('max-line')!.value !==
 							'none' ||
 						currentSubtitle()!.id
 					) {
 						// Make the font-size responsive
-						const maxHeight = globalState.getVideoStyle
+						const maxLine = globalState.getVideoStyle
 							.getStylesOfTarget(target)
-							.findStyle('max-height')!.value as string;
-						const maxHeightValue = parseFloat(maxHeight);
+							.findStyle('max-line')!.value as number;
 
 						let fontSize = globalState.getVideoStyle
 							.getStylesOfTarget(target)
@@ -146,23 +141,40 @@
 
 						const subtitles = document.querySelectorAll('.' + target);
 						subtitles.forEach(async (subtitle) => {
-							// Tant que la hauteur du texte est supérieure à la hauteur maximale, on réduit la taille de la police
+							// Tant que le nbre de span qui ont un positionnement Y différent de son précédent
+							// est supérieur au nbre de ligne, alors on réduit la taille de la police
 
-							console.log(target, (subtitle as HTMLElement).clientHeight, maxHeightValue, fontSize);
+							const spans = subtitle.querySelectorAll('span');
+							if (spans.length === 0) return;
 
-							console.log(target, (subtitle as HTMLElement).getClientRects().length);
+							let lineCount = 1;
 
-							while (subtitle.scrollHeight > maxHeightValue && fontSize > 1) {
-								fontSize -= 5;
+							do {
+								lineCount = 1;
+								let lastY = spans[0].getBoundingClientRect().top;
 
-								globalState.getVideoStyle
-									.getStylesOfTarget(target)
-									.setStyle('reactive-font-size', fontSize);
+								for (const span of spans) {
+									const spanY = span.getBoundingClientRect().top;
+									if (spanY !== lastY) {
+										lineCount++;
+										lastY = spanY;
+									}
+								}
 
-								await new Promise((resolve) => {
-									setTimeout(resolve, 1); // Attendre un peu pour que le DOM se mette à jour
-								});
-							}
+								console.log(target, lineCount, maxLine, fontSize);
+
+								if (lineCount > maxLine && fontSize >= 6) {
+									fontSize -= 5;
+
+									globalState.getVideoStyle
+										.getStylesOfTarget(target)
+										.setStyle('reactive-font-size', fontSize);
+
+									await new Promise((resolve) => {
+										setTimeout(resolve, 1); // Attendre un peu pour que le DOM se mette à jour
+									});
+								}
+							} while (lineCount > maxLine || fontSize < 6);
 						});
 					}
 				} catch (error) {}
@@ -213,7 +225,7 @@
 					max: globalState.getVideoStyle.getStylesOfTarget('arabic').findStyle('vertical-position')!
 						.valueMax
 				}}
-				class={'absolute subtitle select-none flex flex-row-reverse flex-wrap ' +
+				class={'arabic absolute subtitle select-none flex flex-row-reverse flex-wrap ' +
 					getTailwind('arabic') +
 					helperStyles()}
 				style="opacity: {subtitleOpacity('arabic')}; {getCss('arabic', currentSubtitle()!.id)};"

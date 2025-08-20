@@ -136,13 +136,13 @@
 				"icon": "format_line_spacing"
 			},
 			{
-				"id": "max-height",
-				"name": "Max Height (Make Text Fit)",
-				"description": "Limit text height and auto-adjust font size to fit",
+				"id": "max-line",
+				"name": "Max Number of Lines",
+				"description": "Limit text height and auto-adjust font size to fit within this many lines",
 				"value": "none",
 				"valueType": "select",
-				"options": ["none", "50", "75", "100", "125", "150", "175", "200", "300", "400"],
-				"css": "max-height: {value}px; height: {value}px;",
+				"options": ["none", "1", "2", "3", "4"],
+				"css": "",
 				"tailwind": false,
 				"icon": "height"
 			},

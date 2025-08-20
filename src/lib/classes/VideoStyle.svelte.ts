@@ -47,7 +47,7 @@ export type TextStyleName =
 	| 'letter-spacing'
 	| 'word-spacing'
 	| 'line-height'
-	| 'max-height'
+	| 'max-line'
 	| 'reactive-font-size';
 
 export type PositioningStyleName =
